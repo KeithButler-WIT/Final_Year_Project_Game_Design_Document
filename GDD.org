@@ -166,7 +166,7 @@ The game will feature the aesthetic of playstation 1 era retro graphics
 **** Player Weapons
 
 Fists \\
-Crowbar \\
+Wrench \\
 Shield
 
 **** Turret Weapons
@@ -265,6 +265,9 @@ The turrets will target the closest enemy to them distance wise.
 The player will be able to use weak attack that's not ideal for dealing with groups of enemies.
 The will also have access to a shield that while it cannot directly do damage itself it can knock back groups of enemies allowing the player it to be strategicly used in tandom with the turrets or just as a safely net for the player.
 
+The player will be anle to use a wrench that while does no damage to enemies if the turret get hit by the wrench it applies a 10% attack speed boost that lasts for three seconds.
+The wrench has a attack cooldown of one second.
+This would allow the wrench to apply a maximum attack speed boost of 20%.
 
 # *** Economy
 # What is the economy of the game? How does it work?
@@ -312,6 +315,7 @@ Option such as:
 - Lighting
 - Shadows
 - Keybinds
+- Brightness
 - Blood
 - Aim Assist
 - Colour blind mode
@@ -319,11 +323,17 @@ Option such as:
 *** Game Options
 # What are the options and how do they affect game play and mechanics?
 
+- Graphic quality
+- Lighting
+- Shadows
+- Keybinds
 - Brightness
-- Volume
-- Aim assist
+- Blood
+- Aim Assist
+- Colour blind mode
 
 *** Replaying and Saving
+
 The game will save on completion of a level, there will not be any auto saves during missions.
 If the player quits the game while in the hub world the game will save before exiting.
 
@@ -335,8 +345,10 @@ Every level can be replayed at any point in the game.
 * Story, Setting and Character
 ** Story and Narrative
 *** Back story
+
 A factory is being attacked by evil looking turrets.
 A turret falls on an assembly line and lands near the player.
+
 # *** Plot Elements
 *** Game Progression
 
@@ -356,6 +368,7 @@ A turret falls on an assembly line and lands near the player.
 # **** Connections to other areas
 # *** Area #2
 # **** etc.
+
 ** Characters
 *** Character #1 The Player
 **** Back story
@@ -364,6 +377,7 @@ Having being born after the robot uprising being ruled over by robots is all thi
 but robots are as much a part of life
 
 # **** Personality
+
 **** Look
 
 ***** Physical characteristics
@@ -374,6 +388,7 @@ White jumpsuit.
 - Walking animation
 - Placing turret animation
 - Dash animation
+
 # **** Special Abilities
 # **** Relevance to game story
 # **** Relationship to other characters
@@ -391,40 +406,56 @@ Complete multiple mini tutorials.
 # **** Map
 # *** Critical Path
 *** Encounters
-On the fourth mini tutorial the player will encounter the first basic enemies.
-The enemy will not be able to attack the player.
+On the fourth mini tutorial the player will encounter the first basic enemies. \\
+The enemy will not be able to attack the player. \\
 This tutorial is to show the player how to attack. \\
 
-On the fifth mini tutorial the player will encounter an enemy that is repeatedly doing an attack.
+On the fifth mini tutorial the player will encounter an enemy that is repeatedly doing an attack. \\
 This tutorial is to show the player how to use the dash mechanic to avoid damage.
 
 # *** Level Walkthrough
 *** Closing Material
+
 In game cutscene of the player exiting the map.
+
 ** Level #1 : Concrete Jungle
 # *** Synopsis
 *** Introductory Material
+
 In game cutscene of the player entering the map.
+
 *** Objectives
+
 Chosen while the player selects the level.
+
 *** Physical Description
+
 Random Generation is used to vary the level every time the level is played.
 A bleak grey factory setting blinking lights and machinery dot the landscape.
 
 Large open areas.
+
 # **** Map
 # **** Critical Path
 # **** Encounters
 # **** Level Walkthrough
+
 *** Closing Material
+
 In game cutscene of the player exiting the map.
+
 ** Level #2 : Ruined City
 # *** Synopsis
 *** Introductory Material
+
 In game cutscene of the player entering the map.
+
 *** Objectives
+
 Chosen while the player selects the level.
+
 *** Physical Description
+
 Random Generation is used to vary the level every time the level is played.
 An old forgotten town that has been overrun with plant life.
 Trees have grown through windows of some buildings.
@@ -434,7 +465,9 @@ Trees have grown through windows of some buildings.
 # **** Encounters
 # **** Level Walkthrough
 *** Closing Material
+
 In game cutscene of the player exiting the map.
+
 ** Level #3 : Polluted Waste
 # *** Synopsis
 *** Introductory Material
@@ -611,17 +644,22 @@ The project will consist of a total of six sprints, each sprint being twelve day
 Trello’s look and feel are based on the principles of a Kanban board. (Solomon, n.d.)
 
 Trello has a free tier that makes it an ideal choice for a small team of developers.
+
 ** Version control
 Git/Github will be the version control method used when building this project.
 Git has been chosen over Unity Collaborate.
+
 ** Risk Analysis
 | Risk                                                    | Mitigation                                    |
 |---------------------------------------------------------+-----------------------------------------------|
 | Project scope too big to be completed in the time frame | Know when and what to scale back if required. |
-|                                                         |                                               |
+| Not possible to implement specific features             | Alter or drop the feature                     |
+
+
 ** Test Plan
 # how will you test your game? How will you playtest your game?
 The last 2 days of each sprint will be dedicated to playtests.
+
 * Appendices
 ** Credits
 # List ALL third-party assets used in your game. Group them according to type:
