@@ -1,0 +1,14 @@
+.DS_Store
+.idea
+*.log
+tmp/
+
+.auctex-auto/
+*.out
+*.run.xml
+*.xmpi
+*.bcf
+*.aux
+
+.direnv/
+.devenv/

@@ -1,0 +1,669 @@
+#+EXPORT_FILE_NAME: ./game_design_document.pdf
+#+AUTHOR: Keith Butler (20089137)
+
+# A note on writing style: game design documents are technical documents.
+# As such they should not be written in the first or second person, and they should not contain vague terms
+# (e.g. “a head shot will result in ‘significant’ damage”).
+# Aspirational writing should not be used (e.g. hopefully the drawbridge animation will point the player in the right direction).
+# Write in a technical style, in other words be concise, precise, direct, and well organised.
+
+
+* Config :noexport:
+#+begin_src emacs-lisp :exports none  :results none :eval always
+(with-eval-after-load 'ox-latex
+(add-to-list 'org-latex-classes
+             '("org-plain-latex"
+               "\\documentclass{scrreprt}
+           [NO-DEFAULT-PACKAGES]
+           [PACKAGES]
+           [EXTRA]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\subsubsubsection{%s}" . "\\subsubsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+               )))
+(setq org-latex-listings 't)
+#+end_src
+# #+LaTeX_CLASS: org-plain-latex
+
+* Title Page :ignore:
+#+begin_export latex
+\newcommand{\gameName}{Robotic Rebellion}
+\newcommand{\shortDescription}{
+Robotic Rebellion is a 3D bullet hell action roguelike set in a post robot uprising world.
+}
+
+\begin{titlepage}
+\begin{center}
+\title {
+    Game Design Document
+    \\
+    \vspace{7cm}
+    {\huge \gameName}
+}
+
+\maketitle
+\nopar\noindent\rule{\textwidth}{0.4pt}
+\begin{center}\shortDescription\end{center}
+\nopar\noindent\rule{\textwidth}{0.4pt}
+\vspace{15mm}
+
+\end{center}
+\end{titlepage}
+#+end_export
+
+* Table of Contents :ignore:
+#+begin_export latex
+\tableofcontents
+#+end_export
+# * Table of Contents :toc:quote:
+# #+BEGIN_QUOTE
+# - [[#title-page][Title Page]]
+# - [[#game-overview][Game Overview]]
+#   - [[#game-concept][Game Concept]]
+#   - [[#feature-set][Feature Set]]
+#   - [[#genres][Genres]]
+#   - [[#target-audience][Target Audience]]
+#   - [[#game-flow-summary--how-does-the-player-move-through-the-game-both-through-framing-interface-and-the-game-itself][Game Flow Summary – How does the player move through the game? Both through framing interface and the game itself.]]
+#   - [[#look-and-feel--what-is-the-basic-look-and-feel-of-the-game-what-is-the-visual-style-give-examples][Look and Feel – What is the basic look and feel of the game? What is the visual style? Give examples]]
+#   - [[#project-scope--a-summary-of-the-scope-of-the-game][Project Scope – A summary of the scope of the game.]]
+# - [[#gameplay-and-mechanics][Gameplay and Mechanics]]
+#   - [[#gameplay][Gameplay]]
+#   - [[#mechanics--what-are-the-rules-to-the-game-both-implicit-and-explicit-this-is-the-model-of-the-universe-that-the-game-works-under-think-of-it-as-a-simulation-of-a-world-how-do-all-the-pieces-interact-this-actually-can-be-a-very-large-section][Mechanics – What are the rules to the game, both implicit and explicit? This is the model of the universe that the game works under. Think of it as a simulation of a world, how do all the pieces interact? This actually can be a very large section.]]
+#   - [[#screen-flow][Screen Flow]]
+# - [[#story-setting-and-character][Story, Setting and Character]]
+#   - [[#story-and-narrative][Story and Narrative]]
+#   - [[#game-world][Game World]]
+#   - [[#characters][Characters]]
+# - [[#levels][Levels]]
+#   - [[#training-level][Training Level]]
+#   - [[#level-1--concrete-jungle][Level #1 : Concrete Jungle]]
+#   - [[#level-2--ruined-city][Level #2 : Ruined City]]
+#   - [[#level-3--polluted-waste][Level #3 : Polluted Waste]]
+#   - [[#level-4--forgotten-plains][Level #4 : Forgotten Plains]]
+# - [[#interface][Interface]]
+#   - [[#visual-system][Visual System]]
+#   - [[#control-system--how-does-the-game-player-control-the-game-what-are-the-specific-commands][Control System – How does the game player control the game? What are the specific commands?]]
+#   - [[#audio][Audio]]
+#   - [[#music][Music]]
+#   - [[#sound-effects][Sound Effects]]
+#   - [[#help-system][Help System]]
+# - [[#artificial-intelligence][Artificial Intelligence]]
+#   - [[#enemy-ai][Enemy AI]]
+#   - [[#non-combat-characters][Non-combat Characters]]
+#   - [[#friendly-characters][Friendly Characters]]
+#   - [[#support-ai][Support AI]]
+#   - [[#turret-ai][Turret AI]]
+# - [[#technical][Technical]]
+#   - [[#target-hardware][Target Hardware]]
+#   - [[#development-hardware-and-software][Development hardware and software]]
+#   - [[#game-engine][Game Engine]]
+#   - [[#scripting-language][Scripting Language]]
+# - [[#game-art][Game Art]]
+#   - [[#concept-art][Concept Art]]
+# - [[#project-management][Project Management]]
+#   - [[#project-methodology-pick-one-justify-it-show-how-you-plan-to-tailor-it-to-your-project-do-not-write-in-generic-terms][Project Methodology: pick one, justify it, show how you plan to tailor it to your project. Do not write in generic terms.]]
+#   - [[#detailed-schedule][Detailed Schedule]]
+#   - [[#schedule-management][Schedule management]]
+#   - [[#version-control][Version control]]
+#   - [[#risk-analysis][Risk Analysis]]
+#   - [[#test-plan-how-will-you-test-your-game-how-will-you-playtest-your-game][Test Plan: how will you test your game? How will you playtest your game?]]
+# - [[#appendices][Appendices]]
+#   - [[#references][References]]
+#   - [[#project-logs][Project logs.]]
+# #+END_QUOTE
+
+* Declaration
+I, Keith Butler, declare that this report is entirely my own work and has not been taken from the work of others. I declare this report has been written entirely in my own words, and all sources used in research are fully acknowledged.
+    - Keith Butler (20089137)
+
+* Game Overview
+** Game Concept
+Robotic Rebellion is a 3D bullet hell action roguelike set in a post robot uprising world where the few remaining humans are hidden in isolated comunities around the world.
+
+A playable demo is available on github: [[https://github.com/KeithButler-WIT/final_year_project][GitHub - KeithButler-WIT/final_year_project]]
+
+** Feature Set
+- Fast pace combat
+- Procedural level generation
+- Dynamic difficulty
+- Multiple upgrade paths
+- Boids based ai
+
+** Genres
+3D, Bullet hell, Roguelike, Action, Auto-shooter, Top-down.
+
+** Target Audience
+
+This game is targeted towards people aged 12+ who are looking for a roguelike game that recreates the experience of playing characters such as Engineer in Team Fortress 2(Valve, 2007) and Engineer in Deep Rock Galactic(Ghost Ship Games, 2020).
+
+** Game Flow Summary
+# How does the player move through the game? Both through framing interface and the game itself.
+
+Each level will be a fast paced action filled twenty plus minute mission.
+
+** Look and Feel
+# What is the basic look and feel of the game? What is the visual style? Give examples
+
+The game world is set in a expansive factory compound where almost every surface of the ground is dotted with various forms of machinery.
+The game will feature the aesthetic of playstation 1 era retro graphics
+
+** Project Scope
+# A summary of the scope of the game.
+
+*** Number of locations
+
+6 locations
+
+*** Number of levels
+
+5 levels
+# *** Number of NPC’s
+
+*** Number of weapons
+**** Player Weapons
+
+Fists \\
+Crowbar \\
+Shield
+
+**** Turret Weapons
+
+4 elemental variations \\
+2 movement variations \\
+
+One elemental variation can be used in tandom with a movement variation to give the player a unique combat experience.
+
+* Gameplay and Mechanics
+** Gameplay
+*** Game Progression
+
+# The player begins the game with a single Turret
+# After defeating the boss the player will be rewarded with a new ability or turret.
+As the player progresses through the levels they will unlock points towards the upgrade system that can be used to customise their gameplay style.
+
+**** Dynamic Difficulty
+
+Similarly to Risk of Rain 2 (Hopoo Games, 2020).
+The difficulty of the game depends on time spent in the level.
+The difficulty starts at a low level at the begining of each level, every 3 minutes 0.25 more enemies spawn, each new enemy will also have 0.10% more health and attack damage. \\
+
+This would encourage the player to move quickly and to complete the level before enemies get to difficult for them.
+
+**** Upgrade system
+- 2 Skill trees
+  - Turret
+    - Increase number of turrets
+    - Add mobility
+      - Increase move speed
+    - Hunter mark (ability to make enemies to focus fire on)
+    - Bullet pierce
+  - Player
+    - Number of dashes
+    - Distance of dashes
+    - Delay between dashes
+
+# *** Mission/challenge Structure
+*** Objectives
+Player will have the choice of four objectives prior to selecting a mission.
+The choices will be:
+1. Retrieve - The player find an item and brings it back to the spawn point.
+2. Defend - The player is tasked with protecting a point on the map for a specific amount of time.
+3. Destroy - The player is tasked to attack a specific point on the map.
+4. Purge - The player is tasked to kill a specific number of enemies.
+
+# *** Play Flow
+# How does the game flow for the game player
+** Mechanics
+# What are the rules to the game, both implicit and explicit? This is the model of the universe that the game works under. Think of it as a simulation of a world, how do all the pieces interact? This actually can be a very large section.
+*** Physics
+# How does the physical universe work?
+
+Unitys built-in physics engine will be used for the games physics.
+The engine "is an integration of the PhysX engine in close partnership with NVIDIA" (Unity, n.d.).
+
+*** Movement
+**** General Movement
+
+The players movement will be controlled by the WASD keys when using a keyboard or by the left joystick when using a controller. \\
+
+For the first 0.5 seconds of movement the player will accelerate up to the max speed.
+
+The max speed of the player is detemined by the weapon that's equipped.
+
+**** Other Movement
+***** Dashing
+
+By pressing the *Space* button the player enters a 'dash' phase in which the player character is launched in the direction of travel.
+This would allow the player to move past enemies or hazards with out being affected by them.
+
+*** Objects
+**** Picking Up Objects
+
+Pickup items will be picked up when the player collised with the objects
+
+**** Moving Objects
+
+Crate and box objects that are marked with yellow paint can be pushed by the player.
+As the player is colliding with the moveable objects and is trying to move the boxes into an empt space the players base speed is halved
+
+*** Actions
+# **** Switches and Buttons
+**** Picking Up, Carrying and Dropping
+
+Certain items can be picked up by the player.
+
+For the player to pickup items all the player has to do is walk on top of the item and it is automatically picked up.
+*** Combat
+# If there is combat or even conflict, how is this specifically modelled?
+
+The focus of the combat will be placed on the placeable turrents that the player has.
+The turrets will target the closest enemy to them distance wise.
+
+The player will be able to use weak attack that's not ideal for dealing with groups of enemies.
+The will also have access to a shield that while it cannot directly do damage itself it can knock back groups of enemies allowing the player it to be strategicly used in tandom with the turrets or just as a safely net for the player.
+
+
+# *** Economy
+# What is the economy of the game? How does it work?
+** Screen Flow
+*** Screen Flow Chart
+# A graphical description of how each screen is related to every other
+#+begin_src mermaid :export results :file screenflowchart.png
+flowchart TD
+    Main_Menu --> Options_Menu
+    Main_Menu --> Game
+    Game --> Pause_Menu
+    Pause_Menu --> Options_Menu
+    Pause_Menu --> Main_Menu
+    Game --> Level_Select_Screen
+    Game --> Upgrade_Menu
+    Game --> Turret_Customisation_Menu
+#+end_src
+
+#+RESULTS:
+[[file:screenflowchart.png]]
+
+Flowchart made using (mermaid.js.org, n.d.)
+
+*** Screen Descriptions
+# What is the purpose of each screen?
+**** Main Menu Screen
+
+- Continue - Only shown if a save already exists
+- Start
+- Options
+- Quit
+
+**** Pause Menu
+
+- Resume
+- Options
+- Quit
+
+**** Options Screen
+
+Various gameplay, graphic and accessibility settings can be adjusted here.
+
+Option such as:
+- Graphic quality
+- Lighting
+- Shadows
+- Keybinds
+- Blood
+- Aim Assist
+- Colour blind mode
+
+*** Game Options
+# What are the options and how do they affect game play and mechanics?
+
+- Brightness
+- Volume
+- Aim assist
+
+*** Replaying and Saving
+The game will save on completion of a level, there will not be any auto saves during missions.
+If the player quits the game while in the hub world the game will save before exiting.
+
+
+Every level can be replayed at any point in the game.
+
+
+
+* Story, Setting and Character
+** Story and Narrative
+*** Back story
+A factory is being attacked by evil looking turrets.
+A turret falls on an assembly line and lands near the player.
+# *** Plot Elements
+*** Game Progression
+
+# *** Cut Scenes
+# **** Cut scene #1
+# ***** Actors
+# ***** Description
+# ***** Storyboard
+# ***** Script
+# **** Cut scene #2
+# ** Game World
+# *** General look and feel of world
+# *** Area #1
+# **** General Description
+# **** Physical Characteristics
+# **** Levels that use area
+# **** Connections to other areas
+# *** Area #2
+# **** etc.
+** Characters
+*** Character #1 The Player
+**** Back story
+
+Having being born after the robot uprising being ruled over by robots is all this character has every known
+but robots are as much a part of life
+
+# **** Personality
+**** Look
+
+***** Physical characteristics
+White jumpsuit.
+
+***** Animations
+
+- Walking animation
+- Placing turret animation
+- Dash animation
+# **** Special Abilities
+# **** Relevance to game story
+# **** Relationship to other characters
+# **** Statistics
+# *** Character #2
+
+* Levels
+** Training Level
+# *** Synopsis
+*** Introductory Material
+In game cutscene of the player entering the map.
+*** Objectives
+Complete multiple mini tutorials.
+*** Physical Description
+# **** Map
+# *** Critical Path
+*** Encounters
+On the fourth mini tutorial the player will encounter the first basic enemies.
+The enemy will not be able to attack the player.
+This tutorial is to show the player how to attack. \\
+
+On the fifth mini tutorial the player will encounter an enemy that is repeatedly doing an attack.
+This tutorial is to show the player how to use the dash mechanic to avoid damage.
+
+# *** Level Walkthrough
+*** Closing Material
+In game cutscene of the player exiting the map.
+** Level #1 : Concrete Jungle
+# *** Synopsis
+*** Introductory Material
+In game cutscene of the player entering the map.
+*** Objectives
+Chosen while the player selects the level.
+*** Physical Description
+Random Generation is used to vary the level every time the level is played.
+A bleak grey factory setting blinking lights and machinery dot the landscape.
+
+Large open areas.
+# **** Map
+# **** Critical Path
+# **** Encounters
+# **** Level Walkthrough
+*** Closing Material
+In game cutscene of the player exiting the map.
+** Level #2 : Ruined City
+# *** Synopsis
+*** Introductory Material
+In game cutscene of the player entering the map.
+*** Objectives
+Chosen while the player selects the level.
+*** Physical Description
+Random Generation is used to vary the level every time the level is played.
+An old forgotten town that has been overrun with plant life.
+Trees have grown through windows of some buildings.
+
+# **** Map
+# **** Critical Path
+# **** Encounters
+# **** Level Walkthrough
+*** Closing Material
+In game cutscene of the player exiting the map.
+** Level #3 : Polluted Waste
+# *** Synopsis
+*** Introductory Material
+In game cutscene of the player entering the map.
+*** Objectives
+Chosen while the player selects the level.
+*** Physical Description
+Random Generation is used to vary the level every time the level is played.
+Littered with waste and objects that block the players view.
+Toxic patches that damage the player and enemies if touched.
+# **** Map
+# **** Critical Path
+# **** Encounters
+# **** Level Walkthrough
+*** Closing Material
+In game cutscene of the player exiting the map.
+** Level #4 : Forgotten Plains
+# *** Synopsis
+*** Introductory Material
+In game cutscene of the player entering the map.
+*** Objectives
+Chosen while the player selects the level.
+*** Physical Description
+Random Generation is used to vary the level every time the level is played.
+Open grasslands.
+# **** Map
+# **** Critical Path
+# **** Encounters
+# **** Level Walkthrough
+*** Closing Material
+In game cutscene of the player exiting the map.
+* Interface
+** Visual System
+# *** HUD
+# What controls
+# *** Menus
+# *** Rendering System
+*** Camera
+The camera will be snapped to the players position
+# *** Lighting Models
+** Control System
+# How does the game player control the game? What are the specific commands?
+
+The Keys WASD on a keyboard or a controller can be used to controller the player.
+
+# ** Audio
+# ** Music
+# ** Sound Effects
+** Help System
+On a new save when a player loads up the game they will be brought to a training level.
+In the training level the player will be shown multiple tool tips that explain the mechanics of the game such as dashing, attacking, placing turrets and the basics of a mission loop.
+* Artificial Intelligence
+** Enemy AI
+Opponent AI will use a modified boids algorithm to simulate a swarm like movement.
+The boid model 'is able to simulate complex flocking behavior as a result of coordinated motion by implementing three simple rules that define the steering behavior of each boid' (Mavhemwa and Nyangani, n.d.).
+
+Such an algorithm will allow the enemies to gather in numbers before attacking the player.
+This will appear to give the enemies a semblance of strategic thinking from the players point of view.
+
+# ** Non-combat Characters
+# ** Friendly Characters
+# ** Support AI
+# *** Player and Collision Detection
+# *** Pathfinding
+# ** Turret AI
+* Technical
+** Target Hardware
+*** MINIMUM:
+Requires a 64-bit processor and operating system \\
+OS : Windows 7 \\
+Processor: Intel Core 2 Duo \\
+Memory: 2 GB RAM \\
+Graphics: DirectX 11 compatible video card (integrated or dedicated with min 512MB memory) \\
+DirectX: Version 11 \\
+Storage: 5 GB available space
+
+** Development hardware and software
+OS : Arch Linux \\
+Processor: AMD Ryszn 5 \\
+Memory: 16 GB RAM \\
+Graphics: AMD ATI Radeon RX 460 \\
+DirectX: Version 11 \\
+
+# ** Development procedures and standards
+** Game Engine
+Unity Engine
+** Scripting Language
+C sharp
+* Game Art
+** Concept Art :ATTACH:
+:PROPERTIES:
+:ID:       0bdd83cc-2ebb-40b9-8257-99f96610790d
+:END:
+
+
+
+[[attachment:_20231231_144851_b77801de-38a1-43d4-ac8d-f5ebabb81cbc.jpg]]
+
+Turret companion concept art, Dall E 3 (2023)
+
+
+
+[[attachment:_20231231_144856_b4da1209-befc-4325-8d08-4aa17c511baf.jpg]]
+
+Turret companion concept art, Dall E 3 (2023)
+
+
+
+[[attachment:_20231231_144902_a860ee91-acf0-4226-ae68-da7c42fec746.jpg]]
+
+Turret companion concept art, Dall E 3 (2023)
+
+
+
+[[attachment:_20231231_144908_609f7dfd-6a5f-4a4f-bbd2-15297549a970.jpg]]
+
+Turret companion concept art, Dall E 3 (2023)
+
+
+
+[[attachment:_20231231_171857player 3.jpg]]
+
+
+Player concept art, Dall E 3 (2023)
+
+
+
+[[attachment:_20231231_171903player 1.jpg]]
+
+
+Player concept art, Dall E 3 (2023)
+
+
+
+[[attachment:_20231231_171915enemy 1.jpg]]
+
+
+Enemy 1 concept art, Dall E 3 (2023)
+
+
+
+[[attachment:_20231231_171921enemy 2.jpg]]
+
+
+Enemy 2 concept art, Dall E 3 (2023)
+
+
+# ** Style Guides
+# ** Characters
+# ** Environments
+# ** Equipment
+# ** Cut scenes
+# ** Miscellaneous
+* Project Management
+** Project Methodology
+# pick one, justify it, show how you plan to tailor it to your project. Do not write in generic terms.
+The scrum methodology will be used.
+Scrum is a lightweight framework that helps people, teams and organizations generate value through adaptive solutions for complex problems.
+** Detailed Schedule
+The project will consist of a total of six sprints, each sprint being twelve day long.
+
+| Sprint | Start Date | End Date   | Deliverables | Prototype Link |
+|--------+------------+------------+--------------+----------------|
+|      1 | 01/01/2024 | 14/01/2024 | Prototype 1  |                |
+|      2 | 15/01/2024 | 28/01/2024 | Prototype 2  |                |
+|      3 | 29/01/2024 | 11/02/2024 | Prototype 3  |                |
+|      4 | 12/02/2024 | 25/02/2024 | Prototype 4  |                |
+|      5 | 26/02/2024 | 10/03/2024 |              |                |
+|      6 | 11/03/2024 | 25/03/2024 | Final Game   |                |
+
+** Schedule management
+[[https://trello.com/][Trello]] will be used for schedule management and as a scrum/kanban board.
+
+Trello’s look and feel are based on the principles of a Kanban board. (Solomon, n.d.)
+
+Trello has a free tier that makes it an ideal choice for a small team of developers.
+** Version control
+Git/Github will be the version control method used when building this project.
+Git has been chosen over Unity Collaborate.
+** Risk Analysis
+| Risk                                                    | Mitigation                                    |
+|---------------------------------------------------------+-----------------------------------------------|
+| Project scope too big to be completed in the time frame | Know when and what to scale back if required. |
+|                                                         |                                               |
+** Test Plan
+# how will you test your game? How will you playtest your game?
+The last 2 days of each sprint will be dedicated to playtests.
+* Appendices
+** Credits
+# List ALL third-party assets used in your game. Group them according to type:
+[[https://assetstore.unity.com/packages/templates/systems/topdown-engine-89636][TopDown Engine | Systems | Unity Asset Store]]
+# *** Images
+# *** Models
+# *** Animations
+# *** Audio
+# *** Cameras
+# *** Player controllers
+# *** Etc.
+** References
+
+
+- acaniti, Daniel (February 2018). [[https://scrumorg-website-prod.s3.amazonaws.com/drupal/2018-02/2018%20Kanban%20Guide%20for%20Scrum%20Teams_0.pdf][The Kanban Guide for Scrum Teams]] (PDF). scrum.org. Retrieved December 28, 2023.
+
+
+- Ghost Ship Games. (2020). Deep Rock Galactic. [online] Available at: https://www.deeprockgalactic.com/.
+
+
+- Hopoo Games, (2020). Risk of Rain. [online] Available at: https://www.riskofrain.com/.
+‌
+
+- Mavhemwa, P. and Nyangani, I. (n.d.). Uniform spatial subdivision to improve Boids Algorithm in a gaming environment. [online] Available at: https://www.ijarnd.com/manuscripts/v3i10/V3I10-1144.pdf [Accessed 31 Dec. 2023].
+
+
+- mermaid.js.org. (n.d.). Mermaid | Diagramming and charting tool. [online] Available at: https://mermaid.js.org.
+
+
+- Sebastian von Mammen and Jacob, C. (2009). Swarming for Games: Immersion in Complex Systems. Springer eBooks, pp.293–302. doi:https://doi.org/10.1007/978-3-642-01129-0_33.
+
+
+- Silva, A.R.D., Lages, W.S. and Chaimowicz, L. (2009). Boids that see. Computers in Entertainment, 7(4), pp.1–20. doi:https://doi.org/10.1145/1658866.1658870.
+
+
+- Solomon, K. (n.d.). What Is Trello Used For? Project Management Software Explained | Trello. [online] blog.trello.com. Available at: https://blog.trello.com/what-is-trello-used-for.
+
+
+- Unity, U. (n.d.). Physics solutions for game development | Unity. [online] unity.com. Available at: https://unity.com/solutions/programming-physics.
+
+‌
+- Valve www.teamfortress.com. (2007). Team Fortress 2. [online] Available at: https://www.teamfortress.com/.
+
+# ** Project logs.
+# Weekly/fortnightly log, such as Sprint doc (if using Scrum), Trello charts, YouTube vlog, etc.
